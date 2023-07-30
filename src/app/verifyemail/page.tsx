@@ -1,9 +1,11 @@
 "use client";
 import axios from "axios";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
+    const router = useRouter();
+
     const [token, setToken] = useState("");
     const [verified, setVerified] = useState(false);
     const [error, setError] = useState(false);
@@ -30,15 +32,24 @@ export default function VerifyEmailPage() {
         }
     }, [token])
 
+    useEffect(() => {
+        if (verified) {
+            const redirectTimeout = setTimeout(() => {
+                router.push("/login")
+            }, 3000)
+
+            return () => clearTimeout(redirectTimeout)
+        }
+
+    }, [verified, router])
+
+
     return (
         <div>
-            <h1>Verify Email</h1>
-            <h2>{token ? `${token}` : "no token"}</h2>
-
             {verified && (
-                <div>
-                    <h2>Email verified</h2>
-                    <Link href={'/login'}>Login</Link>
+                <div className="text-center gap-5 mt-5">
+                    <h2>Email verified successfully</h2>
+                    <p>You will be redirected to the login page within 3 seconds...</p>
                 </div>
             )}
 
