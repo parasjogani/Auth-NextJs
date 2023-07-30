@@ -10,10 +10,15 @@ export async function GET(request: NextRequest) {
         const userId = await getDataFromToken(request);
         const user = await User.findOne({ _id: userId }).select("-password");
 
-        return NextResponse.json({
-            message: "User Found",
-            data: user
-        })
+        if (typeof user === "object") {
+            return NextResponse.json({
+                message: "User Found",
+                data: user
+            });
+        } else {
+            // Handle the case when user data is not an object (e.g., if it's a string)
+            return NextResponse.json({ error: "Invalid user data" }, { status: 500 });
+        }
     } catch (error: any) {
         return NextResponse.json({ error: error.message },
             { status: 400 });
